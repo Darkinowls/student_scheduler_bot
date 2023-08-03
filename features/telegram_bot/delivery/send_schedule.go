@@ -7,12 +7,14 @@ import (
 	"time"
 )
 
-func RunPeriodically(interval time.Duration, bot *tgbotapi.BotAPI, scheduleMap map[string]*models.ScheduleEntity, chatId int64) {
-	ticker := time.NewTicker(interval)
+func RunPeriodically(bot *tgbotapi.BotAPI, scheduleMap map[string]*models.ScheduleEntity) {
+	ticker := time.NewTicker(use_case.RunScheduleInterval)
 	defer ticker.Stop()
 	for {
 		<-ticker.C
-		key := use_case.GetKeyByTime(time.Now())
+		currentTime := time.Now()
+		use_case.SleepIfNeeded(currentTime)
+		key := use_case.GetKeyByTime(currentTime)
 		schedule, found := scheduleMap[key]
 		if !found {
 			continue

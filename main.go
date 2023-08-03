@@ -7,7 +7,6 @@ import (
 	httpserver "studentBot/features/http_server/delivery"
 	telegrambot "studentBot/features/telegram_bot/delivery"
 	"studentBot/features/telegram_bot/models"
-	"time"
 )
 
 func main() {
@@ -31,6 +30,6 @@ func main() {
 	const MyChatId int64 = 1647688266
 	scheduleMap := make(map[string]*models.ScheduleEntity)
 	go telegrambot.CheckUpdates(bot, MyChatId, scheduleMap)
-	telegrambot.RunPeriodically(2*time.Minute, bot, scheduleMap, MyChatId)
+	telegrambot.RunPeriodically(bot, scheduleMap)
 
 }

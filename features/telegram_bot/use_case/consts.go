@@ -1,16 +1,43 @@
 package use_case
 
-import "regexp"
+import (
+	"regexp"
+	"time"
+)
+
+const (
+	MimeJson            = "application/json"
+	HourToSleepDown     = 18
+	HourToWakeUp        = 8
+	RunScheduleInterval = 2 * time.Minute
+	DayInterval         = 24 * time.Hour
+)
+
+const (
+	SunKey   = "Нд"
+	MonKey   = "Пн"
+	TueKey   = "Вв"
+	WedKey   = "Ср"
+	ThuKey   = "Чт"
+	FriKey   = "Пт"
+	SatKey   = "Сб"
+	SunValue = 0
+	MonValue = 1
+	TueValue = 2
+	WedValue = 3
+	ThuValue = 4
+	FriValue = 5
+	SatValue = 6
+)
 
 var DayMap = map[string]int{
-	"Пн": 1,
-	"Вв": 2,
-	"Ср": 3,
-	"Чт": 4,
-	"Пт": 5,
-	"Сб": 6,
+	SunKey: SunValue,
+	MonKey: MonValue,
+	TueKey: TueValue,
+	WedKey: WedValue,
+	ThuKey: ThuValue,
+	FriKey: FriValue,
+	SatKey: SatValue,
 }
-
-const MimeJson = "application/json"
 
 var TimeRegex, _ = regexp.Compile(`^([01]?[0-9]|2[0-3])\.\d{2}$`)
