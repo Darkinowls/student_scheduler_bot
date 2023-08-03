@@ -6,25 +6,33 @@ import (
 	"time"
 )
 
-func GetKeyByTime(cTime time.Time) string {
+func GetKeysByTime(currentTime time.Time, nextMinutes ...int) (keys []string) {
+	keys = append(keys, getKeyByTime(currentTime))
+	for _, minute := range nextMinutes {
+		keys = append(keys, getKeyByTime(currentTime.Add(time.Duration(minute)*time.Minute)))
+	}
+	return keys
+}
+
+func SleepIfNeeded(currentTime time.Time) {
+	sleepDayIfDayOfWeek(currentTime, SunValue)
+	sleepIfTimeOfDay(currentTime, HourToSleepDown, HourToWakeUp)
+}
+
+func getKeyByTime(currentTime time.Time) string {
 	// Get the week number (odd/even)
-	_, week := cTime.ISOWeek()
+	_, week := currentTime.ISOWeek()
 	weekNumber := 1
 	if week%2 == 0 {
 		weekNumber = 2
 	}
 
 	// Get the day of the week (number)
-	dayNumber := int(cTime.Weekday())
+	dayNumber := int(currentTime.Weekday())
 	// Get the time (hours and minutes)
-	timeString := cTime.Format("15.04")
+	timeString := currentTime.Format("15.04")
 	// Combine the components and format the final string
 	return fmt.Sprintf("%d:%d:%s", weekNumber, dayNumber, timeString)
-}
-
-func SleepIfNeeded(currentTime time.Time) {
-	sleepDayIfDayOfWeek(currentTime, SunValue)
-	sleepIfTimeOfDay(currentTime, HourToSleepDown, HourToWakeUp)
 }
 
 func sleepIfTimeOfDay(currentTime time.Time, hourToSleep int, hourToWakeUp int) {
