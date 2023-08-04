@@ -6,10 +6,9 @@ import (
 	"time"
 )
 
-func GetKeysByTime(currentTime time.Time, nextMinutes ...int) (keys []string) {
-	keys = append(keys, getKeyByTime(currentTime))
-	for _, minute := range nextMinutes {
-		keys = append(keys, getKeyByTime(currentTime.Add(time.Duration(minute)*time.Minute)))
+func GetKeysByTime(currentTime time.Time, intervalMinutes int) (keys []string) {
+	for i := 0; i < intervalMinutes; i++ {
+		keys = append(keys, getKeyByTime(currentTime.Add(time.Duration(i)*time.Minute)))
 	}
 	return keys
 }
