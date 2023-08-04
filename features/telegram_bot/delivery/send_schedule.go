@@ -10,6 +10,9 @@ import (
 func RunPeriodically(bot *tgbotapi.BotAPI, scheduleMap map[string]*models.ScheduleEntity) {
 	ticker := time.NewTicker(use_case.RunScheduleInterval)
 	defer ticker.Stop()
+
+	// TODO: check if sleep every hour and not 2 minutes
+
 	for {
 		<-ticker.C
 		currentTime := time.Now()

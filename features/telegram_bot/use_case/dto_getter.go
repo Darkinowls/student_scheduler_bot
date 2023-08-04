@@ -13,6 +13,7 @@ import (
 
 func GetClientScheduleDTOFromUpdate(update *tgbotapi.Update, bot *tgbotapi.BotAPI) (dto *models.ClientScheduleDTO, err error) {
 	downloadedFile, err := downloadIncomingFile(update, bot)
+	defer os.Remove(downloadedFile.Name())
 	defer downloadedFile.Close()
 	if err != nil {
 		return nil, errors.New("Cannot load the file")
