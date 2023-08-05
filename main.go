@@ -3,43 +3,46 @@ package main
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/joho/godotenv"
-	"github.com/redis/go-redis/v9"
+	"log"
 	"strconv"
 	httpserver "studentBot/features/http_server/delivery"
+	"studentBot/features/telegram_bot/consts"
 	"studentBot/features/telegram_bot/delivery"
 	"studentBot/features/telegram_bot/models"
+	"studentBot/features/telegram_bot/use_case"
 )
 
 func main() {
 
 	_ = godotenv.Overload()
 
-	port := delivery.GetEnv("PORT")
+	port := use_case.GetEnv(consts.Port)
 
-	botKey := delivery.GetEnv("BOT_KEY")
+	botKey := use_case.GetEnv(consts.BotKey)
 
-	MyChatId, err := strconv.ParseInt(delivery.GetEnv("CHAT_ID"), 10, 64)
+	MyChatId, err := strconv.ParseInt(use_case.GetEnv(consts.ChatId), 10, 64)
 	if err != nil {
-		panic("CHAT_ID error:" + err.Error())
+		log.Println("CHAT_ID error:" + err.Error())
+		return
 	}
 
-	redisUrl := delivery.GetEnv("REDIS_URL")
-	opt, err := redis.ParseURL(redisUrl)
-	if err != nil {
-		panic(err)
-	}
+	//redisUrl := use_case.GetEnv(consts.RedisUrl)
+	//scheduleRepository := repository.NewScheduleRepository(&redisUrl)
+	//defer scheduleRepository.Close()
 
 	bot, err := tgbotapi.NewBotAPI(botKey)
 	if err != nil {
-		panic(err)
+		log.Println(err)
+		return
 	}
-
-	client := redis.NewClient(opt)
-	defer client.Close()
 
 	go httpserver.ServeHttpServer(&port)
 
 	scheduleMap := make(map[string]*models.ScheduleEntity)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 	go delivery.CheckUpdates(bot, MyChatId, scheduleMap)
 	delivery.RunPeriodically(bot, scheduleMap)
 

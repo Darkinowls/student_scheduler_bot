@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"studentBot/features/telegram_bot/consts"
 	"studentBot/features/telegram_bot/models"
 )
 
@@ -27,7 +28,7 @@ func ParseClientScheduleDTOToScheduleEntities(dto *models.ClientScheduleDTO, cha
 // Function to convert ClientPair slice to PairEntity slice
 func mapClientPairsToPairEntities(day *models.ClientScheduleWeek, chatId int64, scheduleMap map[string]*models.ScheduleEntity, weekNum int) error {
 
-	if _, f := DayMap[day.Day]; !f {
+	if _, f := consts.DayMap[day.Day]; !f {
 		return errors.New("Day field is incorect")
 	}
 
@@ -46,7 +47,7 @@ func mapClientPairsToPairEntities(day *models.ClientScheduleWeek, chatId int64, 
 			pairEntity.Link = *pair.Place
 		}
 
-		key := makeDatetime(weekNum, DayMap[day.Day], pair.Time)
+		key := makeDatetime(weekNum, consts.DayMap[day.Day], pair.Time)
 		if value, found := scheduleMap[key]; found {
 			pairs := &value.Pairs
 			value.Pairs = append(*pairs, pairEntity)
@@ -60,7 +61,7 @@ func mapClientPairsToPairEntities(day *models.ClientScheduleWeek, chatId int64, 
 
 // Validator function to validate the ClientPair
 func validateClientPair(pair models.ClientPair) error {
-	if !TimeRegex.MatchString(pair.Time) {
+	if !consts.TimeRegex.MatchString(pair.Time) {
 		return errors.New("Time field is incorect")
 	}
 

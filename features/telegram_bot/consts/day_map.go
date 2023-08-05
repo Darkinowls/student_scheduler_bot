@@ -1,17 +1,4 @@
-package use_case
-
-import (
-	"regexp"
-	"time"
-)
-
-const (
-	MimeJson          = "application/json"
-	HourToSleepDown   = 18
-	HourToWakeUp      = 8
-	RunScheduleMinute = 2
-	DayInterval       = 24 * time.Hour
-)
+package consts
 
 const (
 	SunKey   = "Нд"
@@ -39,5 +26,3 @@ var DayMap = map[string]int{
 	FriKey: FriValue,
 	SatKey: SatValue,
 }
-
-var TimeRegex, _ = regexp.Compile(`^([01]?[0-9]|2[0-3])\.\d{2}$`)

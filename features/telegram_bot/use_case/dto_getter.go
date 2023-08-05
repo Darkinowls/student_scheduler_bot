@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"studentBot/features/telegram_bot/consts"
 	"studentBot/features/telegram_bot/models"
 )
 
@@ -35,7 +36,7 @@ func getClientScheduleDTOByFile(downloadedFile *os.File) (*models.ClientSchedule
 }
 
 func downloadIncomingFile(update *tgbotapi.Update, bot *tgbotapi.BotAPI) (downloadedFile *os.File, err error) {
-	if update.Message.Document.MimeType != MimeJson {
+	if update.Message.Document.MimeType != consts.MimeJson {
 		log.Println("File is not a json file")
 		return
 	}

@@ -2,11 +2,10 @@ package tests
 
 import (
 	"context"
-	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/redis/go-redis/v9"
 	"log"
-	"studentBot/features/telegram_bot/delivery"
+	"studentBot/features/telegram_bot/use_case"
 	"testing"
 )
 
@@ -35,11 +34,11 @@ func TestRedisWithKeys(t *testing.T) {
 
 	_, err := pipe.Exec(ctx)
 	if err != nil {
-		fmt.Println("Error saving hashmap in Redis:", err)
+		log.Println("Error saving hashmap in Redis:", err)
 		return
 	}
 
-	fmt.Println("Hashmap saved in Redis successfully.")
+	log.Println("Hashmap saved in Redis successfully.")
 
 	var cursor uint64
 
@@ -54,7 +53,7 @@ func getRedis(env *string) *redis.Client {
 		*env = ".env"
 	}
 	_ = godotenv.Overload("../.env")
-	redisUrl := delivery.GetEnv("REDIS_URL")
+	redisUrl := use_case.GetEnv("REDIS_URL")
 	opt, err := redis.ParseURL(redisUrl)
 	if err != nil {
 		panic(err)
