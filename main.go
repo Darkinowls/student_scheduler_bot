@@ -8,7 +8,7 @@ import (
 	httpserver "studentBot/features/http_server/delivery"
 	"studentBot/features/telegram_bot/consts"
 	"studentBot/features/telegram_bot/delivery"
-	"studentBot/features/telegram_bot/models"
+	"studentBot/features/telegram_bot/repository"
 	"studentBot/features/telegram_bot/use_case"
 )
 
@@ -26,10 +26,6 @@ func main() {
 		return
 	}
 
-	//redisUrl := use_case.GetEnv(consts.RedisUrl)
-	//scheduleRepository := repository.NewScheduleRepository(&redisUrl)
-	//defer scheduleRepository.Close()
-
 	bot, err := tgbotapi.NewBotAPI(botKey)
 	if err != nil {
 		log.Println(err)
@@ -38,12 +34,12 @@ func main() {
 
 	go httpserver.ServeHttpServer(&port)
 
-	scheduleMap := make(map[string]*models.ScheduleEntity)
+	scheduleRepo := repository.NewInMemoryScheduleRepository()
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	go delivery.CheckUpdates(bot, MyChatId, scheduleMap)
-	delivery.RunPeriodically(bot, scheduleMap)
+	go delivery.CheckUpdates(bot, MyChatId, scheduleRepo)
+	delivery.RunPeriodically(bot, scheduleRepo)
 
 }

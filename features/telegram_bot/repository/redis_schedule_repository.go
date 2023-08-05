@@ -7,19 +7,13 @@ import (
 	"studentBot/features/telegram_bot/models"
 )
 
-type ScheduleRepository interface {
-	DeleteAllRecords() error
-	SaveScheduleEntities(sMap map[string]*models.ScheduleEntity) error
-	GetScheduleEntities() (map[string]*models.ScheduleEntity, error)
-	Close() error
-}
-
 type RedisScheduleRepository struct {
 	redis       *redis.Client
 	scheduleMap map[string]*models.ScheduleEntity
 }
 
 func (r *RedisScheduleRepository) DeleteAllRecords() error {
+	r.scheduleMap = make(map[string]*models.ScheduleEntity)
 	_, err := r.redis.FlushAll(context.Background()).Result()
 	return err
 }
@@ -28,6 +22,7 @@ func (r *RedisScheduleRepository) SaveScheduleEntities(sMap map[string]*models.S
 	ctx := context.Background()
 	pipe := r.redis.Pipeline()
 	for key, value := range sMap {
+		r.scheduleMap[key] = value
 		pipe.Set(ctx, key, value, 0)
 	}
 	_, err := pipe.Exec(ctx)
@@ -39,8 +34,10 @@ func (r *RedisScheduleRepository) SaveScheduleEntities(sMap map[string]*models.S
 }
 
 func (r *RedisScheduleRepository) GetScheduleEntities() (map[string]*models.ScheduleEntity, error) {
+	if len(r.scheduleMap) != 0 {
+		return r.scheduleMap, nil
+	}
 	ctx := context.Background()
-
 	// Fetch all keys and their values from Redis
 	keys, err := r.redis.Keys(ctx, "*").Result()
 	if err != nil {
@@ -62,7 +59,7 @@ func (r *RedisScheduleRepository) GetScheduleEntities() (map[string]*models.Sche
 		}
 		scheduleMap[key] = &schedule
 	}
-
+	r.scheduleMap = scheduleMap
 	return scheduleMap, nil
 }
 
@@ -70,10 +67,10 @@ func (r *RedisScheduleRepository) Close() error {
 	return r.redis.Close()
 }
 
-func NewScheduleRepository(redisUrl *string) ScheduleRepository {
+func NewRedisScheduleRepository(redisUrl *string) ScheduleRepository {
 	opt, err := redis.ParseURL(*redisUrl)
 	if err != nil {
 		log.Println(err)
 	}
-	return &RedisScheduleRepository{redis: redis.NewClient(opt)}
+	return &RedisScheduleRepository{redis: redis.NewClient(opt), scheduleMap: make(map[string]*models.ScheduleEntity)}
 }

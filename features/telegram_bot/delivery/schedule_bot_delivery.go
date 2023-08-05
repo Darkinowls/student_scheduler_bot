@@ -4,12 +4,12 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
 	"studentBot/features/telegram_bot/consts"
-	"studentBot/features/telegram_bot/models"
+	"studentBot/features/telegram_bot/repository"
 	"studentBot/features/telegram_bot/use_case"
 	"time"
 )
 
-func RunPeriodically(bot *tgbotapi.BotAPI, scheduleMap map[string]*models.ScheduleEntity) {
+func RunPeriodically(bot *tgbotapi.BotAPI, scheduleRepo repository.ScheduleRepository) {
 	minuteTicker := time.NewTicker(consts.RunScheduleMinute * time.Minute)
 	defer minuteTicker.Stop()
 	hourTicker := time.NewTicker(time.Hour)
@@ -20,16 +20,16 @@ func RunPeriodically(bot *tgbotapi.BotAPI, scheduleMap map[string]*models.Schedu
 		case <-hourTicker.C:
 			currentTime := time.Now()
 			use_case.SleepIfNeeded(currentTime)
-			sendScheduleInTime(&currentTime, scheduleMap, bot)
+			sendScheduleInTime(&currentTime, scheduleRepo, bot)
 		default:
 			currentTime := time.Now()
-			sendScheduleInTime(&currentTime, scheduleMap, bot)
+			sendScheduleInTime(&currentTime, scheduleRepo, bot)
 		}
 
 	}
 }
 
-func CheckUpdates(bot *tgbotapi.BotAPI, chatId int64, scheduleMap map[string]*models.ScheduleEntity) {
+func CheckUpdates(bot *tgbotapi.BotAPI, chatId int64, scheduleRepository repository.ScheduleRepository) {
 
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
@@ -65,19 +65,28 @@ func CheckUpdates(bot *tgbotapi.BotAPI, chatId int64, scheduleMap map[string]*mo
 			log.Println(err)
 			continue
 		}
-		for k := range scheduleMap {
-			delete(scheduleMap, k)
+		err = scheduleRepository.DeleteAllRecords()
+		if err != nil {
+			log.Println(err)
+			continue
 		}
-		for k, v := range sMap {
-			scheduleMap[k] = v
+		err = scheduleRepository.SaveScheduleEntities(sMap)
+		if err != nil {
+			log.Println(err)
+			continue
 		}
 		log.Print(sMap)
 
 	}
 }
 
-func sendScheduleInTime(currentTime *time.Time, scheduleMap map[string]*models.ScheduleEntity, bot *tgbotapi.BotAPI) {
+func sendScheduleInTime(currentTime *time.Time, scheduleRepo repository.ScheduleRepository, bot *tgbotapi.BotAPI) {
 	keys := use_case.GetKeysByTime(currentTime, consts.RunScheduleMinute)
+	scheduleMap, err := scheduleRepo.GetScheduleEntities()
+	if err != nil {
+		log.Println(err)
+		return
+	}
 	for _, key := range keys {
 		schedule, found := scheduleMap[key]
 		if !found {
