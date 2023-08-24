@@ -8,11 +8,13 @@ import (
 )
 
 func TestTime(t *testing.T) {
-	log.Println(use_case.GetKeysByTime(time.Now(), 1))
+	tim := time.Now()
+	log.Println(use_case.GetKeysByTime(&tim, 1))
 }
 
 func TestTimeNextWeek(t *testing.T) {
-	log.Println(use_case.GetKeysByTime(time.Now().AddDate(0, 0, 7), 1))
+	tim := time.Now().AddDate(0, 0, 7)
+	log.Println(use_case.GetKeysByTime(&tim, 1))
 }
 
 func TestSleep(t *testing.T) {

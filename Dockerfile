@@ -8,4 +8,5 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o main main.go
 FROM gcr.io/distroless/base
 ENV TZ=Europe/Kyiv
 COPY --from=builder /code/main /
+COPY --from=builder /code/.env /
 CMD ["/main"]

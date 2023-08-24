@@ -75,8 +75,10 @@ func CheckUpdates(bot *tgbotapi.BotAPI, chatId int64, scheduleRepository reposit
 			log.Println(err)
 			continue
 		}
-		log.Print(sMap)
-
+		suchMessage := "The schedule is successfully set "
+		log.Print(suchMessage, sMap)
+		msg := tgbotapi.NewMessage(chatId, suchMessage)
+		bot.Send(msg)
 	}
 }
 
