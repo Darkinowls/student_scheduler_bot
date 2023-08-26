@@ -38,9 +38,9 @@ func CheckUpdates(bot *tgbotapi.BotAPI, chatId int64, scheduleRepository reposit
 
 	for update := range updates {
 
-		if update.Message == nil || update.FromChat().ID != chatId {
+		if update.Message == nil || update.FromChat().ID != chatId || update.Message.Document == nil {
 			continue
-		} // If I got a message in the chat
+		} // If I got a document in the chat
 
 		dto, err := use_case.GetClientScheduleDTOFromUpdate(&update, bot)
 		if err != nil {
