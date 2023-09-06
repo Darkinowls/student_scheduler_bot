@@ -60,3 +60,23 @@ func getRedis(env *string) *redis.Client {
 	}
 	return redis.NewClient(opt)
 }
+
+func TestRedisContent(t *testing.T) {
+	env := "../.env"
+	client := getRedis(&env)
+	defer client.Close()
+	keys, err := client.Keys(context.Background(), "*").Result()
+	if err != nil {
+		t.Fatalf("Failed to fetch keys from Redis: %v", err)
+	}
+
+	// Example: Retrieve values for each key
+	for _, key := range keys {
+		value, err := client.Get(context.Background(), key).Result()
+		if err != nil {
+			t.Fatalf("Failed to fetch value for key %s: %v", key, err)
+		}
+		// Do something with the value, e.g., print it
+		t.Logf("Key: %s, Value: %s", key, value)
+	}
+}

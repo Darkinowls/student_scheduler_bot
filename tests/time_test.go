@@ -20,3 +20,8 @@ func TestTimeNextWeek(t *testing.T) {
 func TestSleep(t *testing.T) {
 	use_case.SleepIfNeeded(time.Now())
 }
+
+func TestGetKeyByTime(t *testing.T) {
+	data := use_case.GetKeyByTime(time.Now())
+	log.Println(data)
+}

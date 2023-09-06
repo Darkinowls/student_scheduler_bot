@@ -9,7 +9,7 @@ import (
 
 func GetKeysByTime(currentTime *time.Time, intervalMinutes int) (keys []string) {
 	for i := 0; i < intervalMinutes; i++ {
-		keys = append(keys, getKeyByTime(currentTime.Add(time.Duration(i)*time.Minute)))
+		keys = append(keys, GetKeyByTime(currentTime.Add(time.Duration(i)*time.Minute)))
 	}
 	return keys
 }
@@ -19,12 +19,12 @@ func SleepIfNeeded(currentTime time.Time) {
 	sleepIfTimeOfDay(currentTime, consts.HourToSleepDown, consts.HourToWakeUp)
 }
 
-func getKeyByTime(currentTime time.Time) string {
+func GetKeyByTime(currentTime time.Time) string {
 	// Get the week number (odd/even)
 	_, week := currentTime.ISOWeek()
-	weekNumber := 1
+	weekNumber := 2
 	if week%2 == 0 {
-		weekNumber = 2
+		weekNumber = 1
 	}
 
 	// Get the day of the week (number)
