@@ -2,8 +2,6 @@ version: '3'  # The version of Docker Compose syntax
 
 services:
   student_scheduler_bot:
-    environment:
-      - TZ=Europe/Kiev # Set the timezone to "Europe/Kiev" (Kyiv)
     build: .
     restart: always
 

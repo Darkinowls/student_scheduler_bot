@@ -5,4 +5,5 @@ const (
 	Port     = "PORT"
 	BotKey   = "BOT_KEY"
 	ChatId   = "CHAT_ID"
+	TZ       = "TZ"
 )

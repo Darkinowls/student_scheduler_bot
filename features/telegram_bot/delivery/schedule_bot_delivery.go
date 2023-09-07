@@ -18,11 +18,11 @@ func RunPeriodically(bot *tgbotapi.BotAPI, scheduleRepo repository.ScheduleRepos
 		<-minuteTicker.C
 		select {
 		case <-hourTicker.C:
-			currentTime := time.Now()
+			currentTime := time.Now().In(consts.DefaultTimezone)
 			use_case.SleepIfNeeded(currentTime)
 			sendScheduleInTime(&currentTime, scheduleRepo, bot)
 		default:
-			currentTime := time.Now()
+			currentTime := time.Now().In(consts.DefaultTimezone)
 			sendScheduleInTime(&currentTime, scheduleRepo, bot)
 		}
 

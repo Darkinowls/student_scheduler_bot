@@ -9,6 +9,7 @@ import (
 	"studentBot/features/telegram_bot/delivery"
 	"studentBot/features/telegram_bot/repository"
 	"studentBot/features/telegram_bot/use_case"
+	"time"
 )
 
 func main() {
@@ -18,6 +19,13 @@ func main() {
 	botKey := use_case.GetEnv(consts.BotKey)
 
 	redisUrl := use_case.GetEnv(consts.RedisUrl)
+
+	loc, err := time.LoadLocation(use_case.GetEnv(consts.TZ))
+	if err != nil {
+		log.Println("TZ error:" + err.Error())
+		return
+	}
+	consts.DefaultTimezone = loc
 
 	MyChatId, err := strconv.ParseInt(use_case.GetEnv(consts.ChatId), 10, 64)
 	if err != nil {

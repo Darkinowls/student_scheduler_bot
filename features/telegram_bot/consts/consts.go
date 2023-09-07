@@ -11,3 +11,8 @@ const (
 	RunScheduleMinute = 2
 	DayInterval       = 24 * time.Hour
 )
+
+var (
+	// DefaultTimezone is the default time zone for the package.
+	DefaultTimezone *time.Location
+)
