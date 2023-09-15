@@ -14,8 +14,8 @@ func UnmarshalScheduleEntity(data []byte) (ScheduleEntity, error) {
 	return r, err
 }
 
-func (r *ScheduleEntity) Marshal() ([]byte, error) {
-	return json.Marshal(r)
+func (r *ScheduleEntity) MarshalBinary() ([]byte, error) {
+	return json.Marshal(*r)
 }
 
 type ScheduleEntity struct {

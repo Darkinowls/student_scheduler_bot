@@ -8,11 +8,13 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"studentBot/features/telegram_bot/consts"
 	"studentBot/features/telegram_bot/models"
 )
 
 func GetClientScheduleDTOFromUpdate(update *tgbotapi.Update, bot *tgbotapi.BotAPI) (dto *models.ClientScheduleDTO, err error) {
 	downloadedFile, err := downloadIncomingFile(update, bot)
+	defer os.Remove(downloadedFile.Name())
 	defer downloadedFile.Close()
 	if err != nil {
 		return nil, errors.New("Cannot load the file")
@@ -34,7 +36,7 @@ func getClientScheduleDTOByFile(downloadedFile *os.File) (*models.ClientSchedule
 }
 
 func downloadIncomingFile(update *tgbotapi.Update, bot *tgbotapi.BotAPI) (downloadedFile *os.File, err error) {
-	if update.Message.Document.MimeType != MimeJson {
+	if update.Message.Document.MimeType != consts.MimeJson {
 		log.Println("File is not a json file")
 		return
 	}

@@ -1,0 +1,7 @@
+version: '3'  # The version of Docker Compose syntax
+
+services:
+  student_scheduler_bot:
+    build: .
+    restart: always
+

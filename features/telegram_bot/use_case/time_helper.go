@@ -3,28 +3,28 @@ package use_case
 import (
 	"fmt"
 	"log"
+	"studentBot/features/telegram_bot/consts"
 	"time"
 )
 
-func GetKeysByTime(currentTime time.Time, nextMinutes ...int) (keys []string) {
-	keys = append(keys, getKeyByTime(currentTime))
-	for _, minute := range nextMinutes {
-		keys = append(keys, getKeyByTime(currentTime.Add(time.Duration(minute)*time.Minute)))
+func GetKeysByTime(currentTime *time.Time, intervalMinutes int) (keys []string) {
+	for i := 0; i < intervalMinutes; i++ {
+		keys = append(keys, GetKeyByTime(currentTime.Add(time.Duration(i)*time.Minute)))
 	}
 	return keys
 }
 
 func SleepIfNeeded(currentTime time.Time) {
-	sleepDayIfDayOfWeek(currentTime, SunValue)
-	sleepIfTimeOfDay(currentTime, HourToSleepDown, HourToWakeUp)
+	sleepDayIfDayOfWeek(currentTime, consts.SunValue)
+	sleepIfTimeOfDay(currentTime, consts.HourToSleepDown, consts.HourToWakeUp)
 }
 
-func getKeyByTime(currentTime time.Time) string {
+func GetKeyByTime(currentTime time.Time) string {
 	// Get the week number (odd/even)
 	_, week := currentTime.ISOWeek()
-	weekNumber := 1
+	weekNumber := 2
 	if week%2 == 0 {
-		weekNumber = 2
+		weekNumber = 1
 	}
 
 	// Get the day of the week (number)
@@ -42,7 +42,7 @@ func sleepIfTimeOfDay(currentTime time.Time, hourToSleep int, hourToWakeUp int) 
 	nextWakeUpTime := time.Date(currentTime.Year(), currentTime.Month(), currentTime.Day(), hourToWakeUp, 0, 0, 0, currentTime.Location())
 
 	if hourToWakeUp-hourToSleep <= 0 { // if wake-up time is tomorrow
-		nextWakeUpTime = nextWakeUpTime.Add(DayInterval)
+		nextWakeUpTime = nextWakeUpTime.Add(consts.DayInterval)
 	}
 
 	if currentTime.After(nextSleepTime) && currentTime.Before(nextWakeUpTime) {
@@ -60,7 +60,7 @@ func sleepDayIfDayOfWeek(currentTime time.Time, targetDays ...time.Weekday) {
 	weekDay := int(currentTime.Weekday())
 	for day := range targetDays {
 		if day == weekDay {
-			time.Sleep(DayInterval)
+			time.Sleep(consts.DayInterval)
 		}
 	}
 }
